@@ -1,45 +1,29 @@
-using System;
 using UnityEngine;
 
 public class CubeSpawner : MonoBehaviour
 {
-    private int minCount = 2;
-    private int maxCount = 6;
-    private float _spawnerChance = 1f;
-    private float _miltiplySpawnerChance = 0.5f;
-    public event Action TapCube;
+    [SerializeField] private float _chanceMultiplier = 0.5f;
+    [SerializeField] private float _scaleMultiplier = 0.5f;
+    [SerializeField] private int minCount = 2;
+    [SerializeField] private int maxCount = 6;
 
-    private void OnMouseDown()
+    public void SpawnFromCube(Cube sourceCube)
     {
-        TapCube?.Invoke();
-
-        if (CanSpawn())
+        if (CanSpawn(sourceCube))
         {
-           
-            for (int i = 0; i < UnityEngine.Random.Range(minCount, maxCount); i++)
+
+            for (int i = 0; i < Random.Range(minCount, maxCount); i++)
             {
-                Spawn();
+                Cube clone = Instantiate(sourceCube);
+                clone.transform.localScale *= _scaleMultiplier;
+                clone.GetComponent<Cube>()?.SetRandomColor();
+                clone.ChangeChance(_chanceMultiplier);
             }
         }
-
-        Destroy(gameObject);
     }
 
-    private void Spawn()
+    private bool CanSpawn(Cube cube)
     {
-        GameObject clone = Instantiate(gameObject);
-        clone.SendMessage("SetRandomColor");
-        clone.GetComponent<CubeSpawner>()._spawnerChance = _spawnerChance;
-        clone.GetComponent<CubeSpawner>().DecreaseChance();
-    }
-
-    private void DecreaseChance()
-    {
-        _spawnerChance *= _miltiplySpawnerChance;
-    }
-
-    private bool CanSpawn()
-    {
-        return UnityEngine.Random.value < _spawnerChance;
+        return Random.value < cube.SpawnChance;
     }
 }

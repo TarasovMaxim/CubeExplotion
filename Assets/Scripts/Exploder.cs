@@ -1,50 +1,45 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Exploder : MonoBehaviour
 {
-    [SerializeField] private float _explodeRadius;
-    [SerializeField] private float _explodeForce;
+    [SerializeField] private float _explodeRadius = 5f;
+    [SerializeField] private float _explodeForce = 500f;
     [SerializeField] private ParticleSystem _effect;
+    [SerializeField] private CubeSpawner _spawner;
+    [SerializeField] private Raycaster _raycaster;
 
-    private void OnEnable()
+    private void Update()
     {
-        gameObject.GetComponent<CubeSpawner>().TapCube += Explode;
+        if (Input.GetMouseButtonDown(0))
+        {
+            Cube cube = _raycaster.FindCube();
+
+            if (cube != null)
+            {
+                Explode(cube.gameObject.transform.localPosition);
+                _spawner.SpawnFromCube(cube);
+                Destroy(cube.gameObject);
+            }
+        }
     }
 
-    private void OnDisable()
+    private void Explode(Vector3 position)
     {
-        gameObject.GetComponent<CubeSpawner>().TapCube -= Explode;
-    }
-
-    private void Explode()
-    {
-        float timeExplode = 0.5f;
-
         if (_effect != null)
         {
-            ParticleSystem effectInstance = Instantiate(_effect, transform.position, Quaternion.identity);
-            effectInstance.Play();
-            Destroy(effectInstance.gameObject, timeExplode);
+            ParticleSystem effect = Instantiate(_effect, position, Quaternion.identity);
+            effect.Play();
+            Destroy(effect.gameObject, 0.5f);
         }
 
-        foreach (Rigidbody cube in GetExplodableObjects())
-        {
-            cube.AddExplosionForce(_explodeForce, transform.position, _explodeRadius);
-        }
-    }
-
-    private List<Rigidbody> GetExplodableObjects()
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, _explodeRadius);
-        List<Rigidbody> cubes = new();
+        Collider[] hits = Physics.OverlapSphere(position, _explodeRadius);
 
         foreach (Collider hit in hits)
         {
             if (hit.attachedRigidbody != null)
-                cubes.Add(hit.attachedRigidbody);
+            {
+                hit.attachedRigidbody.AddExplosionForce(_explodeForce, position, _explodeRadius);
+            }
         }
-
-        return cubes;
     }
 }
