@@ -6,17 +6,27 @@ public class CubeSpawner : MonoBehaviour
     [SerializeField] private float _scaleMultiplier = 0.5f;
     [SerializeField] private int minCount = 2;
     [SerializeField] private int maxCount = 6;
+    [SerializeField] private Raycaster _raycaster;
 
-    public void SpawnFromCube(Cube sourceCube)
+    private void OnEnable()
+    {
+        _raycaster.CubeFounded += SpawnFromCube;
+    }
+
+    private void OnDisable()
+    {
+        _raycaster.CubeFounded -= SpawnFromCube;
+    }
+
+    private void SpawnFromCube(Cube sourceCube)
     {
         if (CanSpawn(sourceCube))
         {
-
             for (int i = 0; i < Random.Range(minCount, maxCount); i++)
             {
                 Cube clone = Instantiate(sourceCube);
                 clone.transform.localScale *= _scaleMultiplier;
-                clone.GetComponent<Cube>()?.SetRandomColor();
+                clone.SetRandomColor();
                 clone.ChangeChance(_chanceMultiplier);
             }
         }

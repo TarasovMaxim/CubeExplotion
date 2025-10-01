@@ -1,18 +1,25 @@
 using UnityEngine;
+using System;
 
 public class Raycaster : MonoBehaviour
 {
-    public Cube FindCube()
+    public event Action<Cube> CubeFounded;
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            FindCube();
+        }
+    }
+
+    private void FindCube()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Cube cube;
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            return hit.collider.GetComponent<Cube>();
-
+            CubeFounded?.Invoke(hit.collider.GetComponent<Cube>());
         }
-
-        return null;
     }
 }
