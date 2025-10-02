@@ -3,6 +3,7 @@ using UnityEngine;
 public class Cube : MonoBehaviour
 {
     private Renderer _renderer;
+    public int Generation { get; private set; } = 1;
     public float SpawnChance { get; private set; } = 1f;
 
     private void Awake()
@@ -18,5 +19,10 @@ public class Cube : MonoBehaviour
     public void ChangeChance(float chanceMultiply)
     {
         SpawnChance *= chanceMultiply;
+    }
+
+    public void IncreaseGeneration()
+    {
+        Generation++;
     }
 }

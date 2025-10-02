@@ -19,7 +19,9 @@ public class Raycaster : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            CubeFounded?.Invoke(hit.collider.GetComponent<Cube>());
+            Cube cube;
+            hit.collider.TryGetComponent<Cube>(out cube);
+            CubeFounded?.Invoke(cube);
         }
     }
 }
