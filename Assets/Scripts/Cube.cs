@@ -3,7 +3,8 @@ using UnityEngine;
 public class Cube : MonoBehaviour
 {
     private Renderer _renderer;
-    public int Generation { get; private set; } = 1;
+    public float ScaleMultiplier { get; set; } = 0.5f;
+    public int Generation { get; private set; } = 0;
     public float SpawnChance { get; private set; } = 1f;
 
     private void Awake()
